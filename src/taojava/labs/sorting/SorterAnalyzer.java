@@ -25,12 +25,12 @@ public class SorterAnalyzer
   /**
    * The smallest array size we use.
    */
-  static final int SMALLEST = 10000;
+  static final int SMALLEST = 100;
 
   /**
    * The largest array size we use.
    */
-  static final int LARGEST = 40000;
+  static final int LARGEST = 100000;
 
   /**
    * The amount we scale the array size between tests.
@@ -50,26 +50,54 @@ public class SorterAnalyzer
   /**
    * Build arrays of random integer values.
    */
-  public static final ArrayBuilder<Integer> randomIntArrBuilder = (length) ->
-    {
-      Integer[] vals = new Integer[length];
-      Random random = new Random();
-      for (int i = 0; i < length; i++)
-        vals[i] = random.nextInt(length);
-      return vals;
-    }; // randomIArrayBuilder
+  public static final ArrayBuilder<Integer> randomIntArrBuilder = (length) -> {
+    Integer[] vals = new Integer[length];
+    Random random = new Random();
+    for (int i = 0; i < length; i++)
+      vals[i] = random.nextInt(length);
+    return vals;
+  }; // randomIArrayBuilder
 
   /** 
    * Build arrays of integer values in increasing order.
    */
   public static final ArrayBuilder<Integer> increasingIntArrBuilder =
-      (length) ->
-        {
-          Integer[] vals = new Integer[length];
-          for (int i = 0; i < length; i++)
-            vals[i] = i;
-          return vals;
-        };
+      (length) -> {
+        Integer[] vals = new Integer[length];
+        for (int i = 0; i < length; i++)
+          vals[i] = i;
+        return vals;
+      };
+
+  /** 
+   * Build arrays of integer values in decreasing order.
+   */
+  public static final ArrayBuilder<Integer> decreasingIntArrBuilder =
+      (length) -> {
+        Integer[] vals = new Integer[length];
+        for (int i = 0, j = length; i < length; i++, j--)
+          vals[i] = j;
+        return vals;
+      };
+
+  /** 
+   * Build arrays of integer values in mostly increasing order with a 10% swap.
+   */
+  public static final ArrayBuilder<Integer> partlySwappedIntArrBuilder =
+      (length) -> {
+        Random generator = new Random();
+        Integer[] vals = new Integer[length];
+        for (int i = 0; i < length; i++)
+          vals[i] = i;
+        for (int j = length / 20; j > 0; j--)
+          {
+            int randIndex0 = generator.nextInt(length);
+            int randIndex1 = generator.nextInt(length);
+            vals[randIndex0] = randIndex1;
+            vals[randIndex1] = randIndex0;
+          }
+        return vals;
+      };
 
   // +--------------+----------------------------------------------------
   // | Class Fields |
@@ -140,7 +168,30 @@ public class SorterAnalyzer
                                             ArrayBuilder<T> builder, int size,
                                             int repetitions)
   {
-    return new long[] { basicAnalysis(sorter, order, builder, size) };
+    // to make things easier, grab the first iteration
+    long first = basicAnalysis(sorter, order, builder, size);
+    // initialize stat holders based off the first iteration
+    long time;
+    long min = first, max = first;
+    long ave = first / repetitions;
+    // loop through the rest
+    for (int i = 1; i < repetitions; i++)
+      {
+        // grab each time spent on sorting
+        time = basicAnalysis(sorter, order, builder, size);
+        // compare with current stats
+        if (time <= min)
+          {
+            min = time;
+          } // if
+        else if (time >= max)
+          {
+            max = time;
+          } // else if
+        // update average
+        ave += (time / repetitions);
+      } // for
+    return new long[] { ave, min, max };
   } // compoundAnalysis(Sorter<T>, ArrayBuilder<T>, int, int)
 
   /**
@@ -165,21 +216,30 @@ public class SorterAnalyzer
                                           ArrayBuilder<T> builders[],
                                           String[] builderNames)
   {
-    pen.printf("%-16s%-16s%-16s%-16s\n", "Sorter", "Builder", "Input Size",
-               "Average Time");
-    pen.printf("%-16s%-16s%-16s%-16s\n", "------", "-------", "------------",
-               "------------");
-    for (int b = 0; b < builders.length; b++)
+    // print the headers of the table of statistics
+    pen.printf("%-16s%-16s%-16s%-16s%-16s%-16s\n", "Sorter", "Builder",
+               "Input Size", "Average Time", "Minimum Time", "Maximum Time");
+    pen.printf("%-16s%-16s%-16s%-16s%-16s%-16s\n", "------", "-------", "------------",
+               "------------", "------------", "------------");
+    // loop through all the sorters
+    for (int a = 0; a < sorters.length; a++)
       {
-        for (int size = SMALLEST; size <= LARGEST; size *= SCALE)
+        // loop through all the builders
+        for (int b = 0; b < builders.length; b++)
           {
-            long[] stats =
-                compoundAnalysis(sorters[0], order, builders[b], size,
-                                 REPETITIONS);
-            pen.printf("%-16s%-16s%12d    %12d\n", sorterNames[0],
-                       builderNames[b], size, stats[0]);
-          } // for size
-      } // for builder : builders
+            // jump through the array sizes
+            for (int size = SMALLEST; size <= LARGEST; size *= SCALE)
+              {
+                // take the array of statistics on each size
+                long[] stats =
+                    compoundAnalysis(sorters[a], order, builders[b], size,
+                                     REPETITIONS);
+                // printing as a row on the table
+                pen.printf("%-16s%-16s%12d    %12d%12d%12d\n", sorterNames[a],
+                           builderNames[b], size, stats[0], stats[1], stats[2]);
+              } // for size
+          } // for builder : builders
+      } // for sorter : sorters
   } // combinedAnalysis(PrintWRiter, Sorter<T>, String[], ...)
 
   /**

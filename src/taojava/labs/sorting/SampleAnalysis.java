@@ -6,7 +6,7 @@ import java.io.PrintWriter;
  * A very simple analysis of a few sorting algorithms.
  * 
  * @author Samuel A. Rebelsky
- * @author Your Name Here
+ * @author Eileen, Larry, Camila
  */
 public class SampleAnalysis
 {
@@ -24,8 +24,10 @@ public class SampleAnalysis
     ArrayBuilder<Integer>[] builders =
         (ArrayBuilder<Integer>[]) new ArrayBuilder[] {
                                                       SorterAnalyzer.randomIntArrBuilder,
-                                                      SorterAnalyzer.increasingIntArrBuilder };
-    String[] builderNames = { "Random", "Increasing" };
+                                                      SorterAnalyzer.increasingIntArrBuilder,
+                                                      SorterAnalyzer.decreasingIntArrBuilder,
+                                                      SorterAnalyzer.partlySwappedIntArrBuilder};
+    String[] builderNames = { "Random", "Increasing", "Decreasing", "Partly Swapped" };
 
     SorterAnalyzer.combinedAnalysis(pen, sorters, sorterNames,
                                     SorterAnalyzer.standardIntComparator,

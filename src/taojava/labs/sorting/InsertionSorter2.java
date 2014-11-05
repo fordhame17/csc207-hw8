@@ -1,6 +1,5 @@
 package taojava.labs.sorting;
 
-import java.util.Arrays;
 import java.util.Comparator;
 
 /**
@@ -8,7 +7,7 @@ import java.util.Comparator;
  * 
  * @author Samuel A. Rebelsky
  */
-public class InsertionSorter<T>
+public class InsertionSorter2<T>
     extends SorterBridge<T>
 {
   /**
@@ -27,7 +26,7 @@ public class InsertionSorter<T>
 
   /**
    * Insert the value in position i into the sorted subarray in positions
-   * 0..(n-1). (Using the swap method with some overhead)
+   * 0..(n-1). (Using the swap method and no overhead)
    * 
    * @param values
    *   the array into which we are inserting values.
@@ -56,7 +55,9 @@ public class InsertionSorter<T>
     int i = n;
     while ((i > 0) && (order.compare(vals[i - 1], vals[i]) > 0))
       {
-        Utils.swap(vals, i, i - 1);
+        T tmp = vals[i];
+        vals[i] = vals[i - 1];
+        vals[i - 1] = tmp;
         // Analysis:
         //   I1(i-1) holds, but I1(i) does not hold, because we put an
         //    an "unknown" element at position i-1.
@@ -76,4 +77,4 @@ public class InsertionSorter<T>
     // sorted (I1), the right part is sorted (I2), and the element at
     // the boundary is in the right position.
   } // insert(T[], Comparator<T>, int)
-} // InsertionSorter<T>
+} // InsertionSort2

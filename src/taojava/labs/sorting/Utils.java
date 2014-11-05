@@ -134,7 +134,44 @@ class Utils
                               T[] a2, int lb2, int ub2, T[] merged, int lbm,
                               int ubm)
   {
-    // STUB
+    int i, j, k;
+    // loop through both subarrays simultaneously
+    for (i = lb1, j = lb2, k = lbm; i < ub1 && j < ub2; k++)
+      {
+        // grab each value for comparison
+        T a = a1[i];
+        T b = a2[j];
+        // if a < b
+        if (order.compare(a, b) < 0)
+          {
+            // put a in array and increment subarray1
+            merged[k] = a;
+            i++;
+          } // if
+        // else if b < a or a == b
+        else
+          {
+            // put b in array and increment subarray2
+            merged[k] = b;
+            j++;
+          } // else
+      } // for
+    // special case if excess values in subarray1
+    if (i < ub1)
+      {
+        for (; i < ub1; i++, k++)
+          {
+            merged[k] = a1[i];
+          } // for
+      } // if
+    // special case if excess values in subarray2
+    if (j < ub2)
+      {
+        for (; j < ub2; j++, k++)
+          {
+            merged[k] = a2[j];
+          } // for
+      } // if
     return merged;
   } // merge(Comparator<T>, T[], int, int, T[], int, int)
 

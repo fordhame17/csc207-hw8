@@ -1,6 +1,5 @@
 package taojava.labs.sorting;
 
-import java.util.Arrays;
 import java.util.Comparator;
 
 /**
@@ -8,7 +7,7 @@ import java.util.Comparator;
  * 
  * @author Samuel A. Rebelsky
  */
-public class InsertionSorter<T>
+public class InsertionSorter3<T>
     extends SorterBridge<T>
 {
   /**
@@ -27,7 +26,7 @@ public class InsertionSorter<T>
 
   /**
    * Insert the value in position i into the sorted subarray in positions
-   * 0..(n-1). (Using the swap method with some overhead)
+   * 0..(n-1). (Using the shift method and no overhead)
    * 
    * @param values
    *   the array into which we are inserting values.
@@ -54,12 +53,13 @@ public class InsertionSorter<T>
     //   I2(n) holds at the beginning because that subarray is empty
     //   I3(n) holds at the beginning because the second subarray is empty
     int i = n;
-    while ((i > 0) && (order.compare(vals[i - 1], vals[i]) > 0))
+    T temp = vals[i];
+    i--;
+    while ((i >= 0) && (order.compare(vals[i], temp) > 0))
       {
-        Utils.swap(vals, i, i - 1);
+        vals[i + 1] = vals[i];
         // Analysis:
-        //   I1(i-1) holds, but I1(i) does not hold, because we put an
-        //    an "unknown" element at position i-1.
+        //   I1(i-1) holds b/cwe put an an "unknown" element at position i+1.
         //   I2(i-1) holds b/c all the values in position 0..(i-1) were
         //    less than the values in positions (i+1)..n by I3
         //   I3(i-1) holds b/c we know that the value at position i-1 was
@@ -68,12 +68,13 @@ public class InsertionSorter<T>
         //   We can restore the invariant by subtracting 1 from i.
         i--;
       } // while
+    vals[i + 1] = temp;
 
-    // At this point, either i is 0, in which case I2 tells us that
-    // that the elements in position 1..n are sorted and I3 tells us
+    // At this point, either i is -1, in which case I2 tells us that
+    // that the elements in position 0..n are sorted and I3 tells us
     // that the element in position 0 is smaller than all of those, or
     // i is positive, in which case we know that the left part is
     // sorted (I1), the right part is sorted (I2), and the element at
     // the boundary is in the right position.
   } // insert(T[], Comparator<T>, int)
-} // InsertionSorter<T>
+} // InsertionSort3
