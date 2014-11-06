@@ -12,13 +12,13 @@ public class MergeSorterTest
   @Test
   public void test1()
   {
-    TestUtils.test1(new MergeSorter<Integer>());
+    TestUtils.test1(new MergeSorterB<Integer>());
   } // test1
 
-  @Test
-  public void test2()
-  {
-    TestUtils.test2(new MergeSorter<Integer>());
-  } // test2
+//  @Test
+//  public void test2()
+//  {
+//    TestUtils.test2(new MergeSorterB<Integer>());
+//  } // test2
 
 } // MergeSorterTest

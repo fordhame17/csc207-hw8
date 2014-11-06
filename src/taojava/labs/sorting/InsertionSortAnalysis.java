@@ -33,7 +33,7 @@ public class InsertionSortAnalysis
     SorterAnalyzer.combinedAnalysis(pen, sorters, sorterNames,
                                     SorterAnalyzer.standardIntComparator,
                                     builders, builderNames);
-    
+
     /*
      * The times I will be referencing in the following analysis are all averages since
      * the data gathered for maximums and minimums varied very little.
